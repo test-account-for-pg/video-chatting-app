@@ -1,0 +1,134 @@
+/* Global styles for the video chat application */
+.App {
+  text-align: center;
+}
+
+/* Video player styles */
+.video-player {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: #1f2937;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.video-player video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Control panel styles */
+.control-panel {
+  background-color: #111827;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.control-panel button {
+  transition: all 0.2s ease-in-out;
+}
+
+.control-panel button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.control-panel button:active {
+  transform: translateY(0);
+}
+
+/* Status indicator styles */
+.status-indicator {
+  margin-bottom: 1rem;
+}
+
+/* Loading animation */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .grid {
+    gap: 1rem;
+  }
+  
+  .control-panel {
+    padding: 0.75rem;
+  }
+  
+  .control-panel button {
+    padding: 0.5rem;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* Focus styles for accessibility */
+button:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Error message styles */
+.error-message {
+  background-color: #7f1d1d;
+  border: 1px solid #dc2626;
+  color: #fecaca;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Success message styles */
+.success-message {
+  background-color: #064e3b;
+  border: 1px solid #059669;
+  color: #a7f3d0;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Waiting animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
