@@ -8,6 +8,7 @@
     ],
     "allowJs": true,
     "skipLibCheck": true,
+    "typeRoots": ["./node_modules/@types"],
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
@@ -23,5 +24,10 @@
   "include": [
     "src",
     "src/types/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "tailwind.config.js",
+    "postcss.config.js"
   ]
 }
