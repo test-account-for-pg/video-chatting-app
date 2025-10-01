@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { VideoPlayer } from './VideoPlayer';
 import { ControlPanel } from './ControlPanel';
 import { StatusIndicator } from './StatusIndicator';
@@ -12,20 +12,15 @@ export const VideoChat: React.FC = () => {
     isWaiting,
     isMuted,
     isVideoEnabled,
+    isDisconnected,
     error,
-    initialize,
-    joinWaitingPool,
-    leaveWaitingPool,
+    startMatching,
+    stopMatching,
     endSession,
     toggleAudio,
     toggleVideo,
     clearError
   } = useVideoChat();
-
-  // Initialize the video chat when component mounts
-  useEffect(() => {
-    initialize();
-  }, [initialize]);
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
@@ -72,6 +67,7 @@ export const VideoChat: React.FC = () => {
                   stream={localStream}
                   isLocal={true}
                   className="w-full h-full"
+                  muted={isMuted}
                 />
               </div>
               <div className="absolute top-2 left-2 bg-black bg-opacity-50 px-2 py-1 rounded text-sm">
@@ -86,10 +82,11 @@ export const VideoChat: React.FC = () => {
                   stream={remoteStream}
                   isLocal={false}
                   className="w-full h-full"
+                  status={isConnected ? 'connected' : isWaiting ? 'waiting' : isDisconnected ? 'disconnected' : 'no-one'}
                 />
               </div>
               <div className="absolute top-2 left-2 bg-black bg-opacity-50 px-2 py-1 rounded text-sm">
-                {isConnected ? 'Stranger' : 'Waiting...'}
+                {isConnected ? 'Stranger' : isWaiting ? 'Waiting...' : isDisconnected ? 'Disconnected' : 'No one here'}
               </div>
             </div>
           </div>
@@ -103,8 +100,8 @@ export const VideoChat: React.FC = () => {
           isWaiting={isWaiting}
           onToggleAudio={toggleAudio}
           onToggleVideo={toggleVideo}
-          onJoinWaitingPool={joinWaitingPool}
-          onLeaveWaitingPool={leaveWaitingPool}
+          onJoinWaitingPool={startMatching}
+          onLeaveWaitingPool={stopMatching}
           onEndSession={endSession}
         />
 

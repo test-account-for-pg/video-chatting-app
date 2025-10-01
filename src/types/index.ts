@@ -1,4 +1,4 @@
-// Core types and interfaces for the video chat application
+// Core types for the video chat application
 
 export interface User {
   id: string;
@@ -7,27 +7,14 @@ export interface User {
   createdAt: number;
 }
 
-export interface PeerConnection {
+export interface ChatSession {
   id: string;
-  connection: RTCPeerConnection;
-  remoteStream?: MediaStream;
-  localStream?: MediaStream;
-}
-
-export interface SignalingMessage {
-  type: 'offer' | 'answer' | 'ice-candidate' | 'user-joined' | 'user-left' | 'match-found';
-  from: string;
-  to?: string;
-  data?: any;
-  timestamp: number;
-}
-
-export interface WebRTCMessage {
-  type: 'offer' | 'answer' | 'ice-candidate';
-  from: string;
-  to: string;
-  data: RTCSessionDescriptionInit | RTCIceCandidateInit;
-  timestamp: number;
+  participants: string[];
+  createdAt: number;
+  isActive: boolean;
+  roomId: string;
+  isCaller: boolean;
+  strangerId: string;
 }
 
 export interface MediaConstraints {
@@ -35,39 +22,8 @@ export interface MediaConstraints {
   audio: boolean | MediaTrackConstraints;
 }
 
-export interface ChatSession {
-  id: string;
-  participants: string[];
-  createdAt: number;
-  isActive: boolean;
-}
 
 // Service interfaces for dependency injection
-export interface ISignalingService {
-  connect(): Promise<void>;
-  disconnect(): void;
-  joinWaitingPool(): Promise<void>;
-  leaveWaitingPool(): Promise<void>;
-  sendMessage(message: SignalingMessage): Promise<void>;
-  onMessage(callback: (message: SignalingMessage) => void): void;
-  onUserJoined(callback: (user: User) => void): void;
-  onUserLeft(callback: (userId: string) => void): void;
-  onMatchFound(callback: (session: ChatSession) => void): void;
-}
-
-export interface IPeerConnectionService {
-  createPeerConnection(): Promise<RTCPeerConnection>;
-  createOffer(peerConnection: RTCPeerConnection): Promise<RTCSessionDescriptionInit>;
-  createAnswer(peerConnection: RTCPeerConnection, offer: RTCSessionDescriptionInit): Promise<RTCSessionDescriptionInit>;
-  setLocalDescription(peerConnection: RTCPeerConnection, description: RTCSessionDescriptionInit): Promise<void>;
-  setRemoteDescription(peerConnection: RTCPeerConnection, description: RTCSessionDescriptionInit): Promise<void>;
-  addIceCandidate(peerConnection: RTCPeerConnection, candidate: RTCIceCandidateInit): Promise<void>;
-  onIceCandidate(peerConnection: RTCPeerConnection, callback: (candidate: RTCIceCandidate) => void): void;
-  onRemoteStream(peerConnection: RTCPeerConnection, callback: (stream: MediaStream) => void): void;
-  closeConnection(peerConnection: RTCPeerConnection): void;
-  addLocalStream(peerConnection: RTCPeerConnection, stream: MediaStream): void;
-}
-
 export interface IMediaService {
   getUserMedia(constraints?: MediaConstraints): Promise<MediaStream>;
   stopStream(stream: MediaStream): void;
@@ -78,10 +34,24 @@ export interface IMediaService {
 }
 
 export interface IMatchingService {
-  findMatch(): Promise<ChatSession | null>;
+  startMatching(): Promise<void>;
+  stopMatching(): void;
+  onMatched(callback: (session: ChatSession) => void): void;
   endSession(sessionId: string): Promise<void>;
-  onSessionEnded(callback: (sessionId: string) => void): void;
+  handlePageUnloadCleanup(): Promise<void>;
+  isMatching(): boolean;
 }
+
+export interface IWebRTCService {
+  initConnection(localStream: MediaStream, sessionId: string, isCaller: boolean, peerId: string): Promise<void>;
+  closeConnection(): void;
+  onRemoteStream(callback: (stream: MediaStream) => void): void;
+  onConnectionStateChange(callback: (state: string) => void): void;
+  onError(callback: (error: string) => void): void;
+  getPeerConnection(): RTCPeerConnection | null;
+  isConnectionEstablished(): boolean;
+}
+
 
 // Application state
 export interface AppState {

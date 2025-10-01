@@ -15,26 +15,35 @@ A simple 1:1 stranger video chat application built with React, TypeScript, WebRT
 
 ### Core Components
 
-1. **Signaling Service** (`FirebaseSignalingService`)
+1. **Firebase Service** (`FirebaseService`)
+   - Low-level wrapper for Firebase Realtime Database
    - Manages user waiting pool
    - Handles WebRTC signaling (offers, answers, ICE candidates)
-   - User matching and session management
+   - Session data management and cleanup
 
-2. **Peer Connection Service** (`WebRTCPeerConnectionService`)
+2. **Matching Service** (`MatchingService`)
+   - Uses FirebaseService for user pairing
+   - Implements stranger matching logic
+   - Assigns caller/callee roles
+   - Session lifecycle management
+
+3. **WebRTC Service** (`WebRTCService`)
+   - Uses FirebaseService for signaling
    - WebRTC peer connection management
    - STUN/TURN server configuration
    - Connection state handling
 
-3. **Media Service** (`MediaService`)
+4. **Media Service** (`MediaService`)
    - Camera and microphone access
    - Stream management and controls
    - Device switching capabilities
 
-4. **Matching Service** (`MatchingService`)
-   - User pairing logic
-   - Session lifecycle management
+5. **Video Chat Service** (`VideoChatService`)
+   - High-level orchestration service
+   - Coordinates all other services
+   - Manages application state
 
-5. **Dependency Injection Container** (`ServiceContainer`)
+6. **Dependency Injection Container** (`ServiceContainer`)
    - Service registration and retrieval
    - Easy service swapping for testing/different implementations
 
@@ -42,10 +51,9 @@ A simple 1:1 stranger video chat application built with React, TypeScript, WebRT
 
 All services implement clean interfaces, making them easily swappable:
 
-- `ISignalingService` - Signaling protocol abstraction
-- `IPeerConnectionService` - WebRTC abstraction
 - `IMediaService` - Media handling abstraction
 - `IMatchingService` - User matching abstraction
+- `IWebRTCService` - WebRTC abstraction
 
 ## Setup Instructions
 
@@ -107,10 +115,12 @@ src/
 │   └── useVideoChat.ts # Main video chat logic
 ├── services/           # Business logic services
 │   ├── ServiceContainer.ts # DI container
-│   ├── FirebaseSignalingService.ts
-│   ├── WebRTCPeerConnectionService.ts
-│   ├── MediaService.ts
-│   └── MatchingService.ts
+│   ├── FirebaseService.ts # Firebase Realtime DB wrapper
+│   ├── WebRTCService.ts # WebRTC peer connection management
+│   ├── MatchingService.ts # User matching logic
+│   ├── MediaService.ts # Media device management
+│   ├── VideoChatService.ts # High-level orchestration
+│   └── firebase-config.ts # Firebase configuration
 ├── types/              # TypeScript interfaces
 │   └── index.ts
 └── App.tsx            # Main application component
@@ -120,9 +130,10 @@ src/
 
 ### Single Responsibility Principle
 Each service has a single, well-defined responsibility:
-- Signaling service only handles signaling
+- Firebase service only handles database operations
 - Media service only handles media
-- Peer connection service only handles WebRTC
+- WebRTC service only handles peer connections
+- Matching service only handles user pairing
 
 ### Dependency Injection
 Services are injected through a container, making them:
@@ -138,18 +149,19 @@ Clean interfaces allow for:
 
 ## Customization
 
-### Adding New Signaling Service
+### Adding New Database Service
 
-1. Implement `ISignalingService` interface
-2. Register in `ServiceContainer`:
+1. Implement a new service that handles database operations
+2. Update `FirebaseService` or create a new service
+3. Register in `ServiceContainer`:
 
 ```typescript
-this.services.set('signaling', new YourSignalingService());
+this.services.set('database', new YourDatabaseService());
 ```
 
 ### Adding TURN Servers
 
-Update `WebRTCPeerConnectionService.ts`:
+Update `WebRTCService.ts`:
 
 ```typescript
 private turnServers: RTCIceServer[] = [
