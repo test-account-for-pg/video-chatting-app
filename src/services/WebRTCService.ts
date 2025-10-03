@@ -10,7 +10,6 @@ export class WebRTCService implements IWebRTCService {
   private peerId: string | null = null;
   private dataChannel: RTCDataChannel | null = null;
 
-  // Event callbacks
   private remoteStreamCallbacks: ((stream: MediaStream) => void)[] = [];
   private connectionStateCallbacks: ((state: string) => void)[] = [];
   private errorCallbacks: ((error: string) => void)[] = [];
@@ -20,45 +19,28 @@ export class WebRTCService implements IWebRTCService {
     this.setupSignalingHandlers();
   }
 
-  async initConnection(
-    localStream: MediaStream,
-    sessionId: string,
-    isCaller: boolean,
-    peerId: string
-  ): Promise<void> {
+  async initConnection(localStream: MediaStream, sessionId: string, isCaller: boolean, peerId: string): Promise<void> {
     try {
       this.localStream = localStream;
       this.sessionId = sessionId;
       this.isCaller = isCaller;
       this.peerId = peerId;
 
-      // Create peer connection
       this.peerConnection = new RTCPeerConnection({
-        iceServers: [
-          { urls: 'stun:stun.l.google.com:19302' },
-          { urls: 'stun:stun1.l.google.com:19302' },
-        ],
+        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }],
       });
 
-      // Add local stream tracks
       localStream.getTracks().forEach(track => {
         this.peerConnection!.addTrack(track, localStream);
       });
 
-      // Setup data channel for instant notifications
       this.setupDataChannel();
-
-      // Setup event handlers
       this.setupPeerConnectionHandlers();
 
-      // If caller, create and send offer
       if (isCaller) {
         await this.createAndSendOffer();
       }
-
-      console.log('🔗 WebRTC connection initialized');
     } catch (error) {
-      console.error('❌ Failed to initialize WebRTC connection:', error);
       this.notifyError('Failed to initialize WebRTC connection');
       throw error;
     }
@@ -68,7 +50,6 @@ export class WebRTCService implements IWebRTCService {
     if (this.peerConnection) {
       this.peerConnection.close();
       this.peerConnection = null;
-      console.log('🔌 WebRTCService: Peer connection closed');
     }
 
     this.localStream = null;
@@ -77,29 +58,22 @@ export class WebRTCService implements IWebRTCService {
     this.dataChannel = null;
   }
 
-  // Setup data channel for instant notifications
   private setupDataChannel(): void {
     if (!this.peerConnection) return;
 
-    // Create data channel (caller creates it)
     if (this.isCaller) {
-      this.dataChannel = this.peerConnection.createDataChannel(
-        'notifications',
-        {
-          ordered: true,
-        }
-      );
+      this.dataChannel = this.peerConnection.createDataChannel('notifications', {
+        ordered: true,
+      });
       this.setupDataChannelHandlers();
     }
 
-    // Listen for data channel from remote peer
     this.peerConnection.ondatachannel = event => {
       this.dataChannel = event.channel;
       this.setupDataChannelHandlers();
     };
   }
 
-  // Setup data channel event handlers
   private setupDataChannelHandlers(): void {
     if (!this.dataChannel) return;
     this.dataChannel.onmessage = event => {
@@ -107,17 +81,14 @@ export class WebRTCService implements IWebRTCService {
         const message = JSON.parse(event.data);
 
         if (message.type === 'end_call') {
-          this.connectionStateCallbacks.forEach(callback =>
-            callback('disconnected')
-          );
+          this.connectionStateCallbacks.forEach(callback => callback('disconnected'));
         }
       } catch (error) {
-        console.error('❌ Error parsing data channel message:', error);
+        // Error parsing data channel message
       }
     };
   }
 
-  // Send end call notification via data channel
   sendEndCallNotification(): void {
     if (this.dataChannel && this.dataChannel.readyState === 'open') {
       const message = { type: 'end_call', timestamp: Date.now() };
@@ -148,51 +119,29 @@ export class WebRTCService implements IWebRTCService {
   private setupPeerConnectionHandlers(): void {
     if (!this.peerConnection) return;
 
-    // Handle remote stream
     this.peerConnection.ontrack = event => {
       const remoteStream = event.streams[0];
-      console.log('📹 Remote stream received');
       this.remoteStreamCallbacks.forEach(callback => callback(remoteStream));
     };
 
-    // Handle connection state changes
     this.peerConnection.onconnectionstatechange = () => {
       const state = this.peerConnection?.connectionState || 'unknown';
-      console.log('🔄 Connection state changed:', state);
       this.connectionStateCallbacks.forEach(callback => callback(state));
 
-      // Cleanup session when connection is established (both users connected)
       if (state === 'connected') {
-        console.log(
-          '🎉 Connection established, cleaning up session for both users'
-        );
-        // Also cleanup the peer's session (they should do the same)
         if (this.peerId) {
           this.firebaseService.cleanupSession(this.peerId);
         }
       }
 
-      // Handle disconnection
-      if (
-        state === 'disconnected' ||
-        state === 'failed' ||
-        state === 'closed'
-      ) {
-        console.log('🔌 Connection lost, notifying UI');
-        this.connectionStateCallbacks.forEach(callback =>
-          callback('disconnected')
-        );
+      if (state === 'disconnected' || state === 'failed' || state === 'closed') {
+        this.connectionStateCallbacks.forEach(callback => callback('disconnected'));
         this.closeConnection();
       }
     };
 
-    // Handle ICE candidates
     this.peerConnection.onicecandidate = event => {
       if (event.candidate && this.peerId) {
-        console.log(
-          '🧊 WebRTCService: Sending ICE candidate',
-          event.candidate?.candidate
-        );
         this.firebaseService.sendIceCandidate(this.peerId, event.candidate);
       }
     };
@@ -206,9 +155,7 @@ export class WebRTCService implements IWebRTCService {
       await this.peerConnection.setLocalDescription(offer);
 
       await this.firebaseService.sendOffer(this.peerId, offer);
-      console.log('📤 Offer sent');
     } catch (error) {
-      console.error('❌ Failed to create/send offer:', error);
       this.notifyError('Failed to create/send offer');
     }
   }
@@ -222,9 +169,7 @@ export class WebRTCService implements IWebRTCService {
       await this.peerConnection.setLocalDescription(answer);
 
       await this.firebaseService.sendAnswer(this.peerId, answer);
-      console.log('📤 Answer sent');
     } catch (error) {
-      console.error('❌ Failed to handle offer:', error);
       this.notifyError('Failed to handle offer');
     }
   }
@@ -234,43 +179,34 @@ export class WebRTCService implements IWebRTCService {
 
     try {
       await this.peerConnection.setRemoteDescription(answer);
-      console.log('✅ Answer received and set');
     } catch (error) {
-      console.error('❌ Failed to handle answer:', error);
       this.notifyError('Failed to handle answer');
     }
   }
 
-  private async handleIceCandidate(
-    candidate: RTCIceCandidateInit
-  ): Promise<void> {
+  private async handleIceCandidate(candidate: RTCIceCandidateInit): Promise<void> {
     if (!this.peerConnection) return;
 
     try {
-      console.log('🧊 WebRTCService: Handling ICE candidate', candidate);
       await this.peerConnection.addIceCandidate(candidate);
-      console.log('🧊 ICE candidate added');
     } catch (error) {
       console.error('❌ Failed to add ICE candidate:', error);
     }
   }
 
   private setupSignalingHandlers(): void {
-    // Listen for offers
     this.firebaseService.onOffer((offer, fromUserId) => {
       if (fromUserId === this.peerId) {
         this.handleOffer(offer);
       }
     });
 
-    // Listen for answers
     this.firebaseService.onAnswer((answer, fromUserId) => {
       if (fromUserId === this.peerId) {
         this.handleAnswer(answer);
       }
     });
 
-    // Listen for ICE candidates
     this.firebaseService.onIceCandidates((candidate, fromUserId) => {
       if (fromUserId === this.peerId) {
         this.handleIceCandidate(candidate);

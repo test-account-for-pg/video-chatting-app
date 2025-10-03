@@ -10,3 +10,5 @@ coverage/
 .env.production.local
 public/
 package-lock.json
+.prettierrc
+*.md

@@ -1,7 +1,8 @@
 import { ref, push, onValue, remove, get, set } from 'firebase/database';
 import { database } from './firebase-config';
+import { IFirebaseService } from '../types';
 
-export class FirebaseService {
+export class FirebaseService implements IFirebaseService {
   private currentUserId: string;
   private cleanupListeners: Map<string, () => void> = new Map();
 
@@ -9,7 +10,6 @@ export class FirebaseService {
     this.currentUserId = this.generateUserId();
   }
 
-  // Generate unique user ID
   private generateUserId(): string {
     return 'user_' + Math.random().toString(36).substr(2, 9);
   }
@@ -18,7 +18,6 @@ export class FirebaseService {
     return this.currentUserId;
   }
 
-  // Add user to waiting pool
   async addToWaitingPool(): Promise<void> {
     const waitingRef = ref(database, `waiting_pool/${this.currentUserId}`);
     await set(waitingRef, {
@@ -28,7 +27,6 @@ export class FirebaseService {
     });
   }
 
-  // Check for waiting users and pick the oldest one
   async pickWaitingUser(): Promise<string | null> {
     const waitingRef = ref(database, 'waiting_pool');
     const snapshot = await get(waitingRef);
@@ -49,18 +47,12 @@ export class FirebaseService {
     return null;
   }
 
-  // Remove user from waiting pool
   async removeFromWaitingPool(userId: string): Promise<void> {
     const waitingRef = ref(database, `waiting_pool/${userId}`);
     await remove(waitingRef);
   }
 
-  // Create session entry in DB
-  async createSession(
-    sessionId: string,
-    callerId: string,
-    calleeId: string
-  ): Promise<void> {
+  async createSession(sessionId: string, callerId: string, calleeId: string): Promise<void> {
     const sessionRef = ref(database, `sessions/${sessionId}`);
     await set(sessionRef, {
       callerId,
@@ -70,7 +62,6 @@ export class FirebaseService {
     });
   }
 
-  // Update waiting pool entry with session info
   async updateWaitingPoolWithSession(
     userId: string,
     sessionId: string,
@@ -88,17 +79,13 @@ export class FirebaseService {
     });
   }
 
-  // Listen for waiting pool changes (for user B to get notified)
-  onWaitingPoolUpdate(
-    callback: (sessionId: string, isCaller: boolean, peerId: string) => void
-  ): void {
+  onWaitingPoolUpdate(callback: (sessionId: string, isCaller: boolean, peerId: string) => void): void {
     const waitingRef = ref(database, `waiting_pool/${this.currentUserId}`);
 
     const unsubscribe = onValue(waitingRef, snapshot => {
       if (snapshot.exists()) {
         const data = snapshot.val();
         if (data.sessionId && !data.isWaiting) {
-          // User B gets notified about the match
           callback(data.sessionId, data.isCaller, data.peerId);
         }
       }
@@ -107,11 +94,7 @@ export class FirebaseService {
     this.cleanupListeners.set('waiting_pool', unsubscribe);
   }
 
-  // Send offer to specific user's session path
-  async sendOffer(
-    toUserId: string,
-    offer: RTCSessionDescriptionInit
-  ): Promise<void> {
+  async sendOffer(toUserId: string, offer: RTCSessionDescriptionInit): Promise<void> {
     const offerRef = ref(database, `sessions/${toUserId}/offer`);
     await set(offerRef, {
       type: 'offer',
@@ -122,11 +105,7 @@ export class FirebaseService {
     });
   }
 
-  // Send answer to specific user's session path
-  async sendAnswer(
-    toUserId: string,
-    answer: RTCSessionDescriptionInit
-  ): Promise<void> {
+  async sendAnswer(toUserId: string, answer: RTCSessionDescriptionInit): Promise<void> {
     const answerRef = ref(database, `sessions/${toUserId}/answer`);
     await set(answerRef, {
       type: 'answer',
@@ -137,11 +116,7 @@ export class FirebaseService {
     });
   }
 
-  // Send ICE candidate to specific user's session path
-  async sendIceCandidate(
-    toUserId: string,
-    candidate: RTCIceCandidateInit
-  ): Promise<void> {
+  async sendIceCandidate(toUserId: string, candidate: RTCIceCandidateInit): Promise<void> {
     const candidateRef = ref(database, `sessions/${toUserId}/ice_candidates`);
     await push(candidateRef, {
       type: 'ice-candidate',
@@ -152,16 +127,12 @@ export class FirebaseService {
     });
   }
 
-  // Listen for offer on user's session path (with fromUserId filtering)
-  onOffer(
-    callback: (offer: RTCSessionDescriptionInit, fromUserId: string) => void
-  ): void {
+  onOffer(callback: (offer: RTCSessionDescriptionInit, fromUserId: string) => void): void {
     const offerRef = ref(database, `sessions/${this.currentUserId}/offer`);
 
     const unsubscribe = onValue(offerRef, snapshot => {
       if (snapshot.exists()) {
         const data = snapshot.val();
-        // Only process if not from self
         if (data.fromUserId !== this.currentUserId) {
           callback(data.data, data.fromUserId);
         }
@@ -171,16 +142,12 @@ export class FirebaseService {
     this.cleanupListeners.set('offer', unsubscribe);
   }
 
-  // Listen for answer on user's session path (with fromUserId filtering)
-  onAnswer(
-    callback: (answer: RTCSessionDescriptionInit, fromUserId: string) => void
-  ): void {
+  onAnswer(callback: (answer: RTCSessionDescriptionInit, fromUserId: string) => void): void {
     const answerRef = ref(database, `sessions/${this.currentUserId}/answer`);
 
     const unsubscribe = onValue(answerRef, snapshot => {
       if (snapshot.exists()) {
         const data = snapshot.val();
-        // Only process if not from self
         if (data.fromUserId !== this.currentUserId) {
           callback(data.data, data.fromUserId);
         }
@@ -190,34 +157,16 @@ export class FirebaseService {
     this.cleanupListeners.set('answer', unsubscribe);
   }
 
-  // Listen for ICE candidates on user's session path (with fromUserId filtering)
-  onIceCandidates(
-    callback: (candidate: RTCIceCandidateInit, fromUserId: string) => void
-  ): void {
-    const candidatesRef = ref(
-      database,
-      `sessions/${this.currentUserId}/ice_candidates`
-    );
+  onIceCandidates(callback: (candidate: RTCIceCandidateInit, fromUserId: string) => void): void {
+    const candidatesRef = ref(database, `sessions/${this.currentUserId}/ice_candidates`);
 
     const unsubscribe = onValue(candidatesRef, snapshot => {
       if (snapshot.exists()) {
         const candidates = snapshot.val();
-        console.log('🧊 FirebaseService: Received ICE candidates', candidates);
         Object.values(candidates).forEach((candidate: any) => {
-          console.log('🧊 FirebaseService: Processing candidate', candidate);
-          // Only process if not from self
           if (candidate.fromUserId !== this.currentUserId) {
             if (candidate.data) {
-              console.log(
-                '🧊 FirebaseService: Sending candidate data',
-                candidate.data
-              );
               callback(JSON.parse(candidate.data), candidate.fromUserId);
-            } else {
-              console.error(
-                '🧊 FirebaseService: Missing data field in candidate',
-                candidate
-              );
             }
           }
         });
@@ -227,13 +176,11 @@ export class FirebaseService {
     this.cleanupListeners.set('ice_candidates', unsubscribe);
   }
 
-  // Cleanup specific session data
   async cleanupSession(sessionId: string): Promise<void> {
     const sessionRef = ref(database, `sessions/${sessionId}`);
     await remove(sessionRef);
   }
 
-  // Cleanup all listeners
   cleanup(): void {
     this.cleanupListeners.forEach(unsubscribe => {
       unsubscribe();

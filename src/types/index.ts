@@ -15,6 +15,43 @@ export interface ChatSession {
   strangerId: string;
 }
 
+// Firebase-specific data types
+export interface WaitingPoolEntry {
+  userId: string;
+  createdAt: number;
+  isWaiting: boolean;
+  sessionId?: string;
+  isCaller?: boolean;
+  peerId?: string;
+}
+
+export interface SessionData {
+  callerId: string;
+  calleeId: string;
+  createdAt: number;
+  isActive: boolean;
+}
+
+export interface WebRTCMessage {
+  type: 'offer' | 'answer' | 'ice-candidate';
+  fromUserId: string;
+  toUserId: string;
+  data: RTCSessionDescriptionInit | string;
+  timestamp: number;
+}
+
+// Environment variables interface
+export interface FirebaseConfig {
+  apiKey: string;
+  authDomain: string;
+  databaseURL: string;
+  projectId: string;
+  storageBucket: string;
+  messagingSenderId: string;
+  appId: string;
+  measurementId?: string;
+}
+
 export interface MediaConstraints {
   video: boolean | MediaTrackConstraints;
   audio: boolean | MediaTrackConstraints;
@@ -40,12 +77,7 @@ export interface IMatchingService {
 }
 
 export interface IWebRTCService {
-  initConnection(
-    localStream: MediaStream,
-    sessionId: string,
-    isCaller: boolean,
-    peerId: string
-  ): Promise<void>;
+  initConnection(localStream: MediaStream, sessionId: string, isCaller: boolean, peerId: string): Promise<void>;
   closeConnection(): void;
   sendEndCallNotification(): void;
   onRemoteStream(callback: (stream: MediaStream) => void): void;
@@ -53,6 +85,24 @@ export interface IWebRTCService {
   onError(callback: (error: string) => void): void;
   getPeerConnection(): RTCPeerConnection | null;
   isConnectionEstablished(): boolean;
+}
+
+export interface IFirebaseService {
+  getCurrentUserId(): string;
+  addToWaitingPool(): Promise<void>;
+  pickWaitingUser(): Promise<string | null>;
+  removeFromWaitingPool(userId: string): Promise<void>;
+  createSession(sessionId: string, callerId: string, calleeId: string): Promise<void>;
+  updateWaitingPoolWithSession(userId: string, sessionId: string, isCaller: boolean, peerId: string): Promise<void>;
+  onWaitingPoolUpdate(callback: (sessionId: string, isCaller: boolean, peerId: string) => void): void;
+  sendOffer(toUserId: string, offer: RTCSessionDescriptionInit): Promise<void>;
+  sendAnswer(toUserId: string, answer: RTCSessionDescriptionInit): Promise<void>;
+  sendIceCandidate(toUserId: string, candidate: RTCIceCandidateInit): Promise<void>;
+  onOffer(callback: (offer: RTCSessionDescriptionInit, fromUserId: string) => void): void;
+  onAnswer(callback: (answer: RTCSessionDescriptionInit, fromUserId: string) => void): void;
+  onIceCandidates(callback: (candidate: RTCIceCandidateInit, fromUserId: string) => void): void;
+  cleanupSession(sessionId: string): Promise<void>;
+  cleanup(): void;
 }
 
 // Application state
@@ -69,17 +119,3 @@ export interface AppState {
   isWaiting: boolean;
   error: string | null;
 }
-
-// Event types for state management
-export type AppEvent =
-  | { type: 'USER_JOINED'; payload: User }
-  | { type: 'USER_LEFT'; payload: string }
-  | { type: 'SESSION_STARTED'; payload: ChatSession }
-  | { type: 'SESSION_ENDED'; payload: string }
-  | { type: 'STREAM_RECEIVED'; payload: MediaStream }
-  | { type: 'CONNECTION_ESTABLISHED' }
-  | { type: 'CONNECTION_LOST' }
-  | { type: 'ERROR'; payload: string }
-  | { type: 'TOGGLE_AUDIO' }
-  | { type: 'TOGGLE_VIDEO' }
-  | { type: 'CLEAR_ERROR' };
