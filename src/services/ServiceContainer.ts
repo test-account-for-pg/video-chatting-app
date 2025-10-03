@@ -62,7 +62,6 @@ export class ServiceContainer {
     return this.services.get('firebase');
   }
 
-  // Method to get any service by name
   getService<T>(name: string): T {
     const service = this.services.get(name);
     if (!service) {
@@ -71,17 +70,14 @@ export class ServiceContainer {
     return service;
   }
 
-  // Method to check if a service exists
   hasService(name: string): boolean {
     return this.services.has(name);
   }
 
-  // Method to get all registered service names
   getServiceNames(): string[] {
     return Array.from(this.services.keys());
   }
 
-  // Method to clear all services (useful for testing)
   clearServices(): void {
     this.services.clear();
     this.initializeServices();

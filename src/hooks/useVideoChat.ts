@@ -20,7 +20,6 @@ export const useVideoChat = () => {
   const [state, setState] = useState<AppState>(initialState);
   const videoChatService = serviceContainer.getVideoChatService();
 
-  // Initialize the service
   const initialize = useCallback(async () => {
     try {
       await videoChatService.initialize();
@@ -29,7 +28,6 @@ export const useVideoChat = () => {
     }
   }, [videoChatService]);
 
-  // Start matching
   const startMatching = useCallback(async () => {
     try {
       await videoChatService.startMatching();
@@ -38,12 +36,10 @@ export const useVideoChat = () => {
     }
   }, [videoChatService]);
 
-  // Stop matching
   const stopMatching = useCallback(() => {
     videoChatService.stopMatching();
   }, [videoChatService]);
 
-  // End session
   const endSession = useCallback(async () => {
     try {
       await videoChatService.endSession();
@@ -52,23 +48,19 @@ export const useVideoChat = () => {
     }
   }, [videoChatService]);
 
-  // Toggle audio
   const toggleAudio = useCallback(() => {
     console.log('🔊 useVideoChat: toggleAudio called');
     videoChatService.toggleAudio();
   }, [videoChatService]);
 
-  // Toggle video
   const toggleVideo = useCallback(() => {
     videoChatService.toggleVideo();
   }, [videoChatService]);
 
-  // Clear error
   const clearError = useCallback(() => {
     setState(prev => ({ ...prev, error: null }));
   }, []);
 
-  // Setup state change listener
   useEffect(() => {
     const handleStateChange = (newState: AppState) => {
       setState(newState);
@@ -81,10 +73,8 @@ export const useVideoChat = () => {
     videoChatService.onStateChange(handleStateChange);
     videoChatService.onError(handleError);
 
-    // Initialize on mount
     initialize();
 
-    // Setup page unload cleanup
     videoChatService.setupPageUnloadCleanup();
 
     // Cleanup on unmount
@@ -94,10 +84,8 @@ export const useVideoChat = () => {
   }, [videoChatService, initialize]);
 
   return {
-    // State
     ...state,
 
-    // Actions
     initialize,
     startMatching,
     stopMatching,

@@ -19,9 +19,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   useEffect(() => {
     if (videoRef.current && stream) {
-      console.log('🎥 VideoPlayer: Setting stream', stream);
-      console.log('🎥 VideoPlayer: Stream tracks', stream.getTracks());
-      console.log('🎥 VideoPlayer: isLocal', isLocal);
       videoRef.current.srcObject = stream;
       // Ensure the video plays
       videoRef.current

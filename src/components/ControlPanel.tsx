@@ -23,30 +23,13 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
   onLeaveWaitingPool,
   onEndSession,
 }) => {
-  console.log('🔊 ControlPanel: Rendered with props:', {
-    isMuted,
-    isVideoEnabled,
-    isConnected,
-    isWaiting,
-  });
 
   return (
     <div className="control-panel bg-gray-900 p-3 md:p-4 rounded-lg">
       <div className="flex items-center justify-center space-x-3 md:space-x-4">
         {/* Audio Toggle */}
         <button
-          onClick={() => {
-            console.log(
-              '🔊 ControlPanel: Mute button clicked, current isMuted:',
-              isMuted
-            );
-            console.log(
-              '🔊 ControlPanel: onToggleAudio function:',
-              typeof onToggleAudio
-            );
-            onToggleAudio();
-            console.log('🔊 ControlPanel: onToggleAudio called');
-          }}
+          onClick={onToggleAudio}
           className={`p-3 md:p-3 rounded-full transition-colors touch-manipulation ${
             isMuted
               ? 'bg-red-600 hover:bg-red-700 active:bg-red-800'
