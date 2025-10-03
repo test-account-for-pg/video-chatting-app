@@ -8,6 +8,7 @@ export class WebRTCService implements IWebRTCService {
   private isCaller: boolean = false;
   private firebaseService: FirebaseService;
   private peerId: string | null = null;
+  private dataChannel: RTCDataChannel | null = null;
 
   // Event callbacks
   private remoteStreamCallbacks: ((stream: MediaStream) => void)[] = [];
@@ -39,6 +40,9 @@ export class WebRTCService implements IWebRTCService {
         this.peerConnection!.addTrack(track, localStream);
       });
 
+      // Setup data channel for instant notifications
+      this.setupDataChannel();
+
       // Setup event handlers
       this.setupPeerConnectionHandlers();
 
@@ -62,17 +66,53 @@ export class WebRTCService implements IWebRTCService {
       console.log('🔌 WebRTCService: Peer connection closed');
     }
 
-    // Clear all references
     this.localStream = null;
     this.sessionId = null;
     this.peerId = null;
-    
-    // Clear all callbacks
-    this.remoteStreamCallbacks = [];
-    this.connectionStateCallbacks = [];
-    this.errorCallbacks = [];
-    
-    console.log('🔌 WebRTCService: Connection cleanup completed');
+    this.dataChannel = null;
+  }
+
+  // Setup data channel for instant notifications
+  private setupDataChannel(): void {
+    if (!this.peerConnection) return;
+
+    // Create data channel (caller creates it)
+    if (this.isCaller) {
+      this.dataChannel = this.peerConnection.createDataChannel('notifications', {
+        ordered: true
+      });
+      this.setupDataChannelHandlers();
+    }
+
+    // Listen for data channel from remote peer
+    this.peerConnection.ondatachannel = (event) => {
+      this.dataChannel = event.channel;
+      this.setupDataChannelHandlers();
+    };
+  }
+
+  // Setup data channel event handlers
+  private setupDataChannelHandlers(): void {
+    if (!this.dataChannel) return;
+    this.dataChannel.onmessage = (event) => {
+      try {
+        const message = JSON.parse(event.data);
+        
+        if (message.type === 'end_call') {
+          this.connectionStateCallbacks.forEach(callback => callback('disconnected'));
+        }
+      } catch (error) {
+        console.error('❌ Error parsing data channel message:', error);
+      }
+    };
+  }
+
+  // Send end call notification via data channel
+  sendEndCallNotification(): void {
+    if (this.dataChannel && this.dataChannel.readyState === 'open') {
+      const message = { type: 'end_call', timestamp: Date.now() };
+      this.dataChannel.send(JSON.stringify(message));
+    }
   }
 
   onRemoteStream(callback: (stream: MediaStream) => void): void {

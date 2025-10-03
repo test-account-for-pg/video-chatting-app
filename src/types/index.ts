@@ -1,5 +1,3 @@
-// Core types for the video chat application
-
 export interface User {
   id: string;
   name?: string;
@@ -22,8 +20,7 @@ export interface MediaConstraints {
   audio: boolean | MediaTrackConstraints;
 }
 
-
-// Service interfaces for dependency injection
+// Service interfaces
 export interface IMediaService {
   getUserMedia(constraints?: MediaConstraints): Promise<MediaStream>;
   stopStream(stream: MediaStream): void;
@@ -45,6 +42,7 @@ export interface IMatchingService {
 export interface IWebRTCService {
   initConnection(localStream: MediaStream, sessionId: string, isCaller: boolean, peerId: string): Promise<void>;
   closeConnection(): void;
+  sendEndCallNotification(): void;
   onRemoteStream(callback: (stream: MediaStream) => void): void;
   onConnectionStateChange(callback: (state: string) => void): void;
   onError(callback: (error: string) => void): void;
@@ -61,6 +59,7 @@ export interface AppState {
   remoteStream: MediaStream | null;
   peerConnection: RTCPeerConnection | null;
   isConnected: boolean;
+  isDisconnected: boolean;
   isMuted: boolean;
   isVideoEnabled: boolean;
   isWaiting: boolean;

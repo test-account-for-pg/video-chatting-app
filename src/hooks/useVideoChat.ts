@@ -9,6 +9,7 @@ const initialState: AppState = {
   remoteStream: null,
   peerConnection: null,
   isConnected: false,
+  isDisconnected: false,
   isMuted: false,
   isVideoEnabled: true,
   isWaiting: false,
@@ -17,7 +18,6 @@ const initialState: AppState = {
 
 export const useVideoChat = () => {
   const [state, setState] = useState<AppState>(initialState);
-  const [isDisconnected, setIsDisconnected] = useState(false);
   const videoChatService = serviceContainer.getVideoChatService();
 
   // Initialize the service
@@ -71,17 +71,7 @@ export const useVideoChat = () => {
   // Setup state change listener
   useEffect(() => {
   const handleStateChange = (newState: AppState) => {
-    console.log('🎥 useVideoChat: State changed', newState);
-    console.log('🎥 useVideoChat: Local stream', newState.localStream);
-    console.log('🎥 useVideoChat: Remote stream', newState.remoteStream);
-    console.log('🎥 useVideoChat: isMuted', newState.isMuted);
-    console.log('🎥 useVideoChat: Previous state:', state);
     setState(newState);
-    console.log('🎥 useVideoChat: State set, new state should be:', newState);
-    
-    // Update disconnection status
-    const disconnected = videoChatService.isStrangerDisconnected();
-    setIsDisconnected(disconnected);
   };
 
     const handleError = (error: string) => {
@@ -106,7 +96,6 @@ export const useVideoChat = () => {
   return {
     // State
     ...state,
-    isDisconnected,
     
     // Actions
     initialize,

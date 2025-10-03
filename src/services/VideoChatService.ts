@@ -17,6 +17,7 @@ export class VideoChatService {
     localStream: null,
     remoteStream: null,
     peerConnection: null,
+    isDisconnected: false,
     isConnected: false,
     isMuted: false,
     isVideoEnabled: true,
@@ -82,6 +83,9 @@ export class VideoChatService {
   async endSession(): Promise<void> {
     try {
       const sessionId = this.currentState.currentSession?.id;
+      
+      // Send instant notification via data channel before closing
+      this.webRTCService.sendEndCallNotification();
       
       if (sessionId) {
         await this.matchingService.endSession(sessionId);
@@ -162,8 +166,17 @@ export class VideoChatService {
 
     // Handle connection state changes
     this.webRTCService.onConnectionStateChange((state) => {
-      const isConnected = state === 'connected';
-      this.updateState({ isConnected });
+      const tempState: Partial<AppState> = {};
+      if (state === 'connected') {
+        tempState.isConnected = true;
+        tempState.isWaiting = false;
+      } else if (state === 'disconnected') {
+        tempState.isConnected = false;
+        tempState.isWaiting = false;
+        tempState.remoteStream = null;
+        tempState.isDisconnected = true;
+      }
+      this.updateState(tempState);
     });
 
     // Handle WebRTC errors
@@ -194,14 +207,8 @@ export class VideoChatService {
   }
 
   private updateState(updates: Partial<AppState>): void {
-    console.log('🔄 VideoChatService: updateState called with:', updates);
-    const oldState = { ...this.currentState };
     this.currentState = { ...this.currentState, ...updates };
-    console.log('🔄 VideoChatService: old state:', oldState);
-    console.log('🔄 VideoChatService: new state:', this.currentState);
-    console.log('🔄 VideoChatService: state change callbacks count:', this.stateChangeCallbacks.length);
     this.stateChangeCallbacks.forEach((callback, index) => {
-      console.log(`🔄 VideoChatService: Calling callback ${index}`);
       callback(this.currentState);
     });
   }

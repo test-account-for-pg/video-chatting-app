@@ -26,8 +26,8 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
   console.log('🔊 ControlPanel: Rendered with props:', { isMuted, isVideoEnabled, isConnected, isWaiting });
   
   return (
-    <div className="control-panel bg-gray-900 p-4 rounded-lg">
-      <div className="flex items-center justify-center space-x-4">
+    <div className="control-panel bg-gray-900 p-3 md:p-4 rounded-lg">
+      <div className="flex items-center justify-center space-x-3 md:space-x-4">
         {/* Audio Toggle */}
         <button
           onClick={() => {
@@ -36,10 +36,10 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
             onToggleAudio();
             console.log('🔊 ControlPanel: onToggleAudio called');
           }}
-          className={`p-3 rounded-full transition-colors ${
+          className={`p-3 md:p-3 rounded-full transition-colors touch-manipulation ${
             isMuted 
-              ? 'bg-red-600 hover:bg-red-700' 
-              : 'bg-gray-700 hover:bg-gray-600'
+              ? 'bg-red-600 hover:bg-red-700 active:bg-red-800' 
+              : 'bg-gray-700 hover:bg-gray-600 active:bg-gray-500'
           }`}
           title={isMuted ? 'Unmute' : 'Mute'}
         >
@@ -60,10 +60,10 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
         {/* Video Toggle */}
         <button
           onClick={onToggleVideo}
-          className={`p-3 rounded-full transition-colors ${
+          className={`p-3 md:p-3 rounded-full transition-colors touch-manipulation ${
             !isVideoEnabled 
-              ? 'bg-red-600 hover:bg-red-700' 
-              : 'bg-gray-700 hover:bg-gray-600'
+              ? 'bg-red-600 hover:bg-red-700 active:bg-red-800' 
+              : 'bg-gray-700 hover:bg-gray-600 active:bg-gray-500'
           }`}
           title={isVideoEnabled ? 'Turn off camera' : 'Turn on camera'}
         >
@@ -85,10 +85,10 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
         {!isConnected && (
           <button
             onClick={isWaiting ? onLeaveWaitingPool : onJoinWaitingPool}
-            className={`px-6 py-3 rounded-full font-medium transition-colors ${
+            className={`px-4 md:px-6 py-3 rounded-full font-medium transition-colors touch-manipulation ${
               isWaiting
-                ? 'bg-red-600 hover:bg-red-700 text-white'
-                : 'bg-blue-600 hover:bg-blue-700 text-white'
+                ? 'bg-red-600 hover:bg-red-700 active:bg-red-800 text-white'
+                : 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white'
             }`}
           >
             {isWaiting ? 'Leave Queue' : 'Find Stranger'}
@@ -99,7 +99,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
         {isConnected && (
           <button
             onClick={onEndSession}
-            className="px-6 py-3 rounded-full font-medium bg-red-600 hover:bg-red-700 text-white transition-colors"
+            className="px-4 md:px-6 py-3 rounded-full font-medium bg-red-600 hover:bg-red-700 active:bg-red-800 text-white transition-colors touch-manipulation"
           >
             End Call
           </button>
