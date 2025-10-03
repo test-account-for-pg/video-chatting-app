@@ -1,8 +1,4 @@
-import { 
-  IMediaService, 
-  IMatchingService, 
-  IWebRTCService
-} from '../types';
+import { IMediaService, IMatchingService, IWebRTCService } from '../types';
 import { MediaService } from './MediaService';
 import { MatchingService } from './MatchingService';
 import { WebRTCService } from './WebRTCService';
@@ -30,7 +26,7 @@ export class ServiceContainer {
     const firebaseService = new FirebaseService();
     const matchingService = new MatchingService(firebaseService);
     const webRTCService = new WebRTCService(firebaseService);
-    
+
     // Create VideoChatService with dependency injection
     const videoChatService = new VideoChatService(
       mediaService,
@@ -53,7 +49,6 @@ export class ServiceContainer {
   getMatchingService(): IMatchingService {
     return this.services.get('matching');
   }
-
 
   getWebRTCService(): IWebRTCService {
     return this.services.get('webRTC');
@@ -95,4 +90,3 @@ export class ServiceContainer {
 
 // Export a singleton instance
 export const serviceContainer = ServiceContainer.getInstance();
-

@@ -76,13 +76,13 @@ npm install
 
 ```typescript
 const firebaseConfig = {
-  apiKey: "your-api-key",
-  authDomain: "your-project.firebaseapp.com",
-  databaseURL: "https://your-project-default-rtdb.firebaseio.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "your-sender-id",
-  appId: "your-app-id"
+  apiKey: 'your-api-key',
+  authDomain: 'your-project.firebaseapp.com',
+  databaseURL: 'https://your-project-default-rtdb.firebaseio.com',
+  projectId: 'your-project-id',
+  storageBucket: 'your-project.appspot.com',
+  messagingSenderId: 'your-sender-id',
+  appId: 'your-app-id',
 };
 ```
 
@@ -129,20 +129,26 @@ src/
 ## Key Design Principles
 
 ### Single Responsibility Principle
+
 Each service has a single, well-defined responsibility:
+
 - Firebase service only handles database operations
 - Media service only handles media
 - WebRTC service only handles peer connections
 - Matching service only handles user pairing
 
 ### Dependency Injection
+
 Services are injected through a container, making them:
+
 - Easily testable
 - Swappable for different implementations
 - Loosely coupled
 
 ### Interface Segregation
+
 Clean interfaces allow for:
+
 - Easy mocking in tests
 - Service swapping without code changes
 - Clear contracts between components
@@ -165,10 +171,10 @@ Update `WebRTCService.ts`:
 
 ```typescript
 private turnServers: RTCIceServer[] = [
-  { 
-    urls: 'turn:your-turn-server.com:3478', 
-    username: 'user', 
-    credential: 'pass' 
+  {
+    urls: 'turn:your-turn-server.com:3478',
+    username: 'user',
+    credential: 'pass'
   }
 ];
 ```
@@ -194,16 +200,19 @@ This is a demo application. For production use, consider:
 ## Troubleshooting
 
 ### Camera/Microphone Not Working
+
 - Ensure HTTPS (required for getUserMedia)
 - Check browser permissions
 - Verify device availability
 
 ### Connection Issues
+
 - Check firewall settings
 - Verify STUN/TURN server accessibility
 - Check browser WebRTC support
 
 ### Firebase Issues
+
 - Verify Firebase configuration
 - Check Realtime Database rules
 - Ensure proper authentication (if enabled)

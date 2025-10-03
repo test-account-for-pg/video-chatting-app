@@ -1,14 +1,34 @@
 import { IMediaService, MediaConstraints } from '../types';
 
 export class MediaService implements IMediaService {
-  async getUserMedia(constraints: MediaConstraints = { video: true, audio: true }): Promise<MediaStream> {
+  async getUserMedia(
+    constraints: MediaConstraints = { video: true, audio: true }
+  ): Promise<MediaStream> {
     try {
-      console.log('📹 MediaService: Requesting media with constraints:', constraints);
+      console.log(
+        '📹 MediaService: Requesting media with constraints:',
+        constraints
+      );
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       console.log('📹 MediaService: Media stream obtained:', stream);
-      console.log('📹 MediaService: Stream tracks:', stream.getTracks().map(t => ({ id: t.id, kind: t.kind, enabled: t.enabled })));
-      console.log('📹 MediaService: Audio tracks:', stream.getAudioTracks().map(t => ({ id: t.id, kind: t.kind, enabled: t.enabled })));
-      console.log('📹 MediaService: Video tracks:', stream.getVideoTracks().map(t => ({ id: t.id, kind: t.kind, enabled: t.enabled })));
+      console.log(
+        '📹 MediaService: Stream tracks:',
+        stream
+          .getTracks()
+          .map(t => ({ id: t.id, kind: t.kind, enabled: t.enabled }))
+      );
+      console.log(
+        '📹 MediaService: Audio tracks:',
+        stream
+          .getAudioTracks()
+          .map(t => ({ id: t.id, kind: t.kind, enabled: t.enabled }))
+      );
+      console.log(
+        '📹 MediaService: Video tracks:',
+        stream
+          .getVideoTracks()
+          .map(t => ({ id: t.id, kind: t.kind, enabled: t.enabled }))
+      );
       return stream;
     } catch (error) {
       console.error('❌ Failed to get user media:', error);
@@ -31,15 +51,19 @@ export class MediaService implements IMediaService {
     const audioTracks = this.getAudioTracks(stream);
     console.log('🔊 MediaService: Audio tracks found:', audioTracks.length);
     console.log('🔊 MediaService: Stream object:', stream);
-    console.log('🔊 MediaService: All tracks in stream:', stream.getTracks().map(t => ({ id: t.id, kind: t.kind, enabled: t.enabled })));
-    
+    console.log(
+      '🔊 MediaService: All tracks in stream:',
+      stream
+        .getTracks()
+        .map(t => ({ id: t.id, kind: t.kind, enabled: t.enabled }))
+    );
+
     if (audioTracks.length === 0) {
       console.error('🔊 MediaService: No audio tracks found in stream!');
       return;
     }
-    
+
     audioTracks.forEach((track, index) => {
-      
       track.enabled = enabled;
       console.log(`🔊 Audio ${enabled ? 'enabled' : 'disabled'}`);
     });
@@ -61,4 +85,3 @@ export class MediaService implements IMediaService {
     return stream.getVideoTracks();
   }
 }
-

@@ -40,7 +40,12 @@ export interface IMatchingService {
 }
 
 export interface IWebRTCService {
-  initConnection(localStream: MediaStream, sessionId: string, isCaller: boolean, peerId: string): Promise<void>;
+  initConnection(
+    localStream: MediaStream,
+    sessionId: string,
+    isCaller: boolean,
+    peerId: string
+  ): Promise<void>;
   closeConnection(): void;
   sendEndCallNotification(): void;
   onRemoteStream(callback: (stream: MediaStream) => void): void;
@@ -49,7 +54,6 @@ export interface IWebRTCService {
   getPeerConnection(): RTCPeerConnection | null;
   isConnectionEstablished(): boolean;
 }
-
 
 // Application state
 export interface AppState {
@@ -67,7 +71,7 @@ export interface AppState {
 }
 
 // Event types for state management
-export type AppEvent = 
+export type AppEvent =
   | { type: 'USER_JOINED'; payload: User }
   | { type: 'USER_LEFT'; payload: string }
   | { type: 'SESSION_STARTED'; payload: ChatSession }
