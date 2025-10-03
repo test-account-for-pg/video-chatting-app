@@ -97,7 +97,11 @@ export interface IFirebaseService {
   addToWaitingPool(): Promise<void>;
   pickWaitingUser(): Promise<string | null>;
   removeFromWaitingPool(userId: string): Promise<void>;
-  createSession(sessionId: string, callerId: string, calleeId: string): Promise<void>;
+  createSession(
+    sessionId: string,
+    callerId: string,
+    calleeId: string
+  ): Promise<void>;
   updateWaitingPoolWithSession(
     userId: string,
     sessionId: string,
@@ -108,11 +112,23 @@ export interface IFirebaseService {
     callback: (sessionId: string, isCaller: boolean, peerId: string) => void
   ): void;
   sendOffer(toUserId: string, offer: RTCSessionDescriptionInit): Promise<void>;
-  sendAnswer(toUserId: string, answer: RTCSessionDescriptionInit): Promise<void>;
-  sendIceCandidate(toUserId: string, candidate: RTCIceCandidateInit): Promise<void>;
-  onOffer(callback: (offer: RTCSessionDescriptionInit, fromUserId: string) => void): void;
-  onAnswer(callback: (answer: RTCSessionDescriptionInit, fromUserId: string) => void): void;
-  onIceCandidates(callback: (candidate: RTCIceCandidateInit, fromUserId: string) => void): void;
+  sendAnswer(
+    toUserId: string,
+    answer: RTCSessionDescriptionInit
+  ): Promise<void>;
+  sendIceCandidate(
+    toUserId: string,
+    candidate: RTCIceCandidateInit
+  ): Promise<void>;
+  onOffer(
+    callback: (offer: RTCSessionDescriptionInit, fromUserId: string) => void
+  ): void;
+  onAnswer(
+    callback: (answer: RTCSessionDescriptionInit, fromUserId: string) => void
+  ): void;
+  onIceCandidates(
+    callback: (candidate: RTCIceCandidateInit, fromUserId: string) => void
+  ): void;
   cleanupSession(sessionId: string): Promise<void>;
   cleanup(): void;
 }
@@ -131,4 +147,3 @@ export interface AppState {
   isWaiting: boolean;
   error: string | null;
 }
-

@@ -111,7 +111,6 @@ export class MatchingService implements IMatchingService {
         await this.firebaseService.cleanupSession(this.currentUserId);
         await this.firebaseService.removeFromWaitingPool(this.currentUserId);
       }
-
     } catch (error) {
       console.error('❌ Error during page unload cleanup:', error);
     }

@@ -23,7 +23,6 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
   onLeaveWaitingPool,
   onEndSession,
 }) => {
-
   return (
     <div className="control-panel bg-gray-900 p-3 md:p-4 rounded-lg">
       <div className="flex items-center justify-center space-x-3 md:space-x-4">
