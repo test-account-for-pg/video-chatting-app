@@ -216,3 +216,6 @@ This is a demo application. For production use, consider:
 - Verify Firebase configuration
 - Check Realtime Database rules
 - Ensure proper authentication (if enabled)
+
+### Node version
+- v20.11.1
