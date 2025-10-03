@@ -24,7 +24,7 @@ export class MatchingService implements IMatchingService {
       await this.firebaseService.cleanupSession(this.currentUserId);
       // Check if there's someone waiting
       const waitingUserId = await this.firebaseService.pickWaitingUser();
-      
+
       if (waitingUserId) {
         // Found someone waiting, create match
         console.log('🎯 Found waiting user:', waitingUserId);
@@ -33,10 +33,12 @@ export class MatchingService implements IMatchingService {
         // No one waiting, add ourselves to waiting pool
         console.log('⏳ No one waiting, adding to waiting pool');
         await this.firebaseService.addToWaitingPool();
-              // Set up listener for waiting pool updates (for User B)
-        this.firebaseService.onWaitingPoolUpdate((sessionId, isCaller, peerId) => {
-          this.handleWaitingPoolMatch(sessionId, isCaller, peerId);
-        });
+        // Set up listener for waiting pool updates (for User B)
+        this.firebaseService.onWaitingPoolUpdate(
+          (sessionId, isCaller, peerId) => {
+            this.handleWaitingPoolMatch(sessionId, isCaller, peerId);
+          }
+        );
         console.log('✅ Added to waiting pool');
       }
     } catch (error) {
@@ -50,7 +52,7 @@ export class MatchingService implements IMatchingService {
     if (!this.isMatchingFlag) return;
 
     this.isMatchingFlag = false;
-    
+
     // Remove from waiting pool
     if (this.currentUserId) {
       this.firebaseService.removeFromWaitingPool(this.currentUserId);
@@ -64,7 +66,11 @@ export class MatchingService implements IMatchingService {
   }
 
   // Handle when User B gets notified about a match
-  async handleWaitingPoolMatch(sessionId: string, isCaller: boolean, peerId: string): Promise<void> {
+  async handleWaitingPoolMatch(
+    sessionId: string,
+    isCaller: boolean,
+    peerId: string
+  ): Promise<void> {
     if (!this.currentUserId) return;
 
     try {
@@ -75,18 +81,18 @@ export class MatchingService implements IMatchingService {
         isActive: true,
         roomId: sessionId,
         isCaller: isCaller,
-        strangerId: peerId
+        strangerId: peerId,
       };
 
       // Stop matching and remove from waiting pool
       this.stopMatching();
-      
+
       // Delete waiting pool entry since we're now connected
       await this.firebaseService.removeFromWaitingPool(this.currentUserId);
 
       // Notify callbacks
       this.matchCallbacks.forEach(callback => callback(session));
-      
+
       console.log('🎉 Match received from waiting pool!', session);
     } catch (error) {
       console.error('❌ Error handling waiting pool match:', error);
@@ -97,7 +103,7 @@ export class MatchingService implements IMatchingService {
     try {
       // Cleanup session data
       await this.firebaseService.cleanupSession(sessionId);
-      
+
       console.log('🧹 Session ended and cleaned up:', sessionId);
     } catch (error) {
       console.error('❌ Error ending session:', error);
@@ -109,14 +115,14 @@ export class MatchingService implements IMatchingService {
     try {
       // Stop matching (removes from waiting pool)
       this.stopMatching();
-      
+
       // Cleanup current user's session if exists
       if (this.currentUserId) {
         await this.firebaseService.cleanupSession(this.currentUserId);
         // Also remove from waiting pool (in case stopMatching didn't work)
         await this.firebaseService.removeFromWaitingPool(this.currentUserId);
       }
-      
+
       console.log('🧹 Page unload cleanup completed');
     } catch (error) {
       console.error('❌ Error during page unload cleanup:', error);
@@ -133,11 +139,11 @@ export class MatchingService implements IMatchingService {
     try {
       // Create session ID and determine roles
       const sessionId = this.createSessionId(this.currentUserId, waitingUserId);
-      
+
       // Update User B's existing waiting pool entry with session info (this will notify User B)
       await this.firebaseService.updateWaitingPoolWithSession(
-        waitingUserId, 
-        sessionId, 
+        waitingUserId,
+        sessionId,
         false, // User B is the opposite role
         this.currentUserId // User B's peer is User A
       );
@@ -149,7 +155,7 @@ export class MatchingService implements IMatchingService {
         isActive: true,
         roomId: sessionId,
         isCaller: true,
-        strangerId: waitingUserId
+        strangerId: waitingUserId,
       };
 
       // Stop matching
@@ -157,7 +163,7 @@ export class MatchingService implements IMatchingService {
 
       // Notify callbacks
       this.matchCallbacks.forEach(callback => callback(session));
-      
+
       console.log('🎉 Match created!', session);
     } catch (error) {
       console.error('❌ Error creating match:', error);

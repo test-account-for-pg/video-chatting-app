@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "es6"
-    ],
+    "lib": ["dom", "dom.iterable", "es6"],
     "allowJs": true,
     "skipLibCheck": true,
     "typeRoots": ["./node_modules/@types"],
@@ -21,13 +17,6 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": [
-    "src",
-    "src/types/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "tailwind.config.js",
-    "postcss.config.js"
-  ]
+  "include": ["src", "src/types/**/*"],
+  "exclude": ["node_modules", "tailwind.config.js", "postcss.config.js"]
 }

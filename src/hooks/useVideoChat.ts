@@ -13,7 +13,7 @@ const initialState: AppState = {
   isMuted: false,
   isVideoEnabled: true,
   isWaiting: false,
-  error: null
+  error: null,
 };
 
 export const useVideoChat = () => {
@@ -70,9 +70,9 @@ export const useVideoChat = () => {
 
   // Setup state change listener
   useEffect(() => {
-  const handleStateChange = (newState: AppState) => {
-    setState(newState);
-  };
+    const handleStateChange = (newState: AppState) => {
+      setState(newState);
+    };
 
     const handleError = (error: string) => {
       setState(prev => ({ ...prev, error }));
@@ -96,7 +96,7 @@ export const useVideoChat = () => {
   return {
     // State
     ...state,
-    
+
     // Actions
     initialize,
     startMatching,
@@ -104,7 +104,6 @@ export const useVideoChat = () => {
     endSession,
     toggleAudio,
     toggleVideo,
-    clearError
+    clearError,
   };
 };
-

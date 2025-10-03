@@ -19,7 +19,7 @@ export const VideoChat: React.FC = () => {
     endSession,
     toggleAudio,
     toggleVideo,
-    clearError
+    clearError,
   } = useVideoChat();
 
   return (
@@ -30,7 +30,9 @@ export const VideoChat: React.FC = () => {
         <div className="flex-shrink-0 px-4 py-4">
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-1">Stranger Video Chat</h1>
-            <p className="text-gray-400 text-sm">Connect with random strangers for video conversations</p>
+            <p className="text-gray-400 text-sm">
+              Connect with random strangers for video conversations
+            </p>
           </div>
         </div>
 
@@ -54,8 +56,16 @@ export const VideoChat: React.FC = () => {
                 onClick={clearError}
                 className="text-red-400 hover:text-red-300 ml-2"
               >
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                <svg
+                  className="w-4 h-4"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </button>
             </div>
@@ -87,11 +97,25 @@ export const VideoChat: React.FC = () => {
                   stream={remoteStream}
                   isLocal={false}
                   className="w-full h-full"
-                  status={isConnected ? 'connected' : isWaiting ? 'waiting' : isDisconnected ? 'disconnected' : 'no-one'}
+                  status={
+                    isConnected
+                      ? 'connected'
+                      : isWaiting
+                        ? 'waiting'
+                        : isDisconnected
+                          ? 'disconnected'
+                          : 'no-one'
+                  }
                 />
               </div>
               <div className="absolute top-2 left-2 bg-black bg-opacity-50 px-2 py-1 rounded text-xs">
-                {isConnected ? 'Stranger' : isWaiting ? 'Waiting...' : isDisconnected ? 'Disconnected' : 'No one here'}
+                {isConnected
+                  ? 'Stranger'
+                  : isWaiting
+                    ? 'Waiting...'
+                    : isDisconnected
+                      ? 'Disconnected'
+                      : 'No one here'}
               </div>
             </div>
           </div>
@@ -114,7 +138,10 @@ export const VideoChat: React.FC = () => {
 
         {/* Instructions - Compact for mobile */}
         <div className="flex-shrink-0 px-4 py-2 text-center text-gray-400 text-xs">
-          <p>Tap "Find Stranger" to start • Use buttons below to control audio/video</p>
+          <p>
+            Tap "Find Stranger" to start • Use buttons below to control
+            audio/video
+          </p>
         </div>
       </div>
 
@@ -124,7 +151,9 @@ export const VideoChat: React.FC = () => {
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold mb-2">Stranger Video Chat</h1>
-            <p className="text-gray-400">Connect with random strangers for video conversations</p>
+            <p className="text-gray-400">
+              Connect with random strangers for video conversations
+            </p>
           </div>
 
           {/* Status Indicator */}
@@ -145,8 +174,16 @@ export const VideoChat: React.FC = () => {
                   onClick={clearError}
                   className="text-red-400 hover:text-red-300"
                 >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 </button>
               </div>
@@ -178,11 +215,25 @@ export const VideoChat: React.FC = () => {
                     stream={remoteStream}
                     isLocal={false}
                     className="w-full h-full"
-                    status={isConnected ? 'connected' : isWaiting ? 'waiting' : isDisconnected ? 'disconnected' : 'no-one'}
+                    status={
+                      isConnected
+                        ? 'connected'
+                        : isWaiting
+                          ? 'waiting'
+                          : isDisconnected
+                            ? 'disconnected'
+                            : 'no-one'
+                    }
                   />
                 </div>
                 <div className="absolute top-2 left-2 bg-black bg-opacity-50 px-2 py-1 rounded text-sm">
-                  {isConnected ? 'Stranger' : isWaiting ? 'Waiting...' : isDisconnected ? 'Disconnected' : 'No one here'}
+                  {isConnected
+                    ? 'Stranger'
+                    : isWaiting
+                      ? 'Waiting...'
+                      : isDisconnected
+                        ? 'Disconnected'
+                        : 'No one here'}
                 </div>
               </div>
             </div>
@@ -203,8 +254,13 @@ export const VideoChat: React.FC = () => {
 
           {/* Instructions */}
           <div className="mt-8 text-center text-gray-400 text-sm">
-            <p>Click "Find Stranger" to start looking for someone to chat with.</p>
-            <p>Use the microphone and camera buttons to control your audio and video.</p>
+            <p>
+              Click "Find Stranger" to start looking for someone to chat with.
+            </p>
+            <p>
+              Use the microphone and camera buttons to control your audio and
+              video.
+            </p>
           </div>
         </div>
       </div>

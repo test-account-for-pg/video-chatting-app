@@ -8,12 +8,12 @@ interface VideoPlayerProps {
   status?: 'waiting' | 'disconnected' | 'no-one' | 'connected';
 }
 
-export const VideoPlayer: React.FC<VideoPlayerProps> = ({ 
-  stream, 
-  isLocal = false, 
+export const VideoPlayer: React.FC<VideoPlayerProps> = ({
+  stream,
+  isLocal = false,
   className = '',
   muted = false,
-  status = 'no-one'
+  status = 'no-one',
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -24,13 +24,19 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       console.log('🎥 VideoPlayer: isLocal', isLocal);
       videoRef.current.srcObject = stream;
       // Ensure the video plays
-      videoRef.current.play().then(() => {
-        console.log('🎥 VideoPlayer: Video started playing');
-      }).catch((error) => {
-        console.error('🎥 VideoPlayer: Error playing video:', error);
-      });
+      videoRef.current
+        .play()
+        .then(() => {
+          console.log('🎥 VideoPlayer: Video started playing');
+        })
+        .catch(error => {
+          console.error('🎥 VideoPlayer: Error playing video:', error);
+        });
     } else {
-      console.log('🎥 VideoPlayer: No stream or video element', { stream: !!stream, videoElement: !!videoRef.current });
+      console.log('🎥 VideoPlayer: No stream or video element', {
+        stream: !!stream,
+        videoElement: !!videoRef.current,
+      });
     }
   }, [stream, isLocal]);
 

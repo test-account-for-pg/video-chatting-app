@@ -1,9 +1,9 @@
-import { 
-  IMediaService, 
-  IMatchingService, 
+import {
+  IMediaService,
+  IMatchingService,
   IWebRTCService,
   ChatSession,
-  AppState 
+  AppState,
 } from '../types';
 
 export class VideoChatService {
@@ -22,7 +22,7 @@ export class VideoChatService {
     isMuted: false,
     isVideoEnabled: true,
     isWaiting: false,
-    error: null
+    error: null,
   };
 
   private isDisconnected = false;
@@ -48,9 +48,12 @@ export class VideoChatService {
       // Get local media stream
       const localStream = await this.mediaService.getUserMedia();
       console.log('🎥 VideoChatService: Local stream obtained', localStream);
-      console.log('🎥 VideoChatService: Local stream tracks', localStream.getTracks());
+      console.log(
+        '🎥 VideoChatService: Local stream tracks',
+        localStream.getTracks()
+      );
       this.updateState({ localStream });
-      
+
       console.log('✅ VideoChatService initialized');
     } catch (error) {
       console.error('❌ VideoChatService initialization error:', error);
@@ -67,7 +70,7 @@ export class VideoChatService {
 
       this.updateState({ isWaiting: true, error: null });
       await this.matchingService.startMatching();
-      
+
       console.log('🔍 Started matching for stranger');
     } catch (error) {
       this.handleError('Failed to start matching');
@@ -83,10 +86,10 @@ export class VideoChatService {
   async endSession(): Promise<void> {
     try {
       const sessionId = this.currentState.currentSession?.id;
-      
+
       // Send instant notification via data channel before closing
       this.webRTCService.sendEndCallNotification();
-      
+
       if (sessionId) {
         await this.matchingService.endSession(sessionId);
       }
@@ -96,7 +99,7 @@ export class VideoChatService {
         currentSession: null,
         remoteStream: null,
         isConnected: false,
-        isWaiting: false
+        isWaiting: false,
       });
 
       console.log('🔚 Session ended');
@@ -109,29 +112,40 @@ export class VideoChatService {
     console.log('🔊 VideoChatService: toggleAudio called, current state:', {
       hasLocalStream: !!this.currentState.localStream,
       isMuted: this.currentState.isMuted,
-      streamTracks: this.currentState.localStream?.getTracks().length || 0
+      streamTracks: this.currentState.localStream?.getTracks().length || 0,
     });
-    
+
     if (this.currentState.localStream) {
       const enabled = this.currentState.isMuted;
       // // Use MediaService to toggle audio
       this.mediaService.toggleAudio(this.currentState.localStream, enabled);
 
       this.updateState({ isMuted: !enabled });
-      console.log('🔊 VideoChatService: Audio toggled, new muted state:', !enabled);
+      console.log(
+        '🔊 VideoChatService: Audio toggled, new muted state:',
+        !enabled
+      );
     } else {
-      console.log('🔊 VideoChatService: No local stream available for audio toggle');
+      console.log(
+        '🔊 VideoChatService: No local stream available for audio toggle'
+      );
     }
   }
 
   toggleVideo(): void {
     if (this.currentState.localStream) {
       const enabled = !this.currentState.isVideoEnabled;
-      console.log('📹 VideoChatService: Toggling video', { enabled, currentVideoEnabled: this.currentState.isVideoEnabled });
-      
+      console.log('📹 VideoChatService: Toggling video', {
+        enabled,
+        currentVideoEnabled: this.currentState.isVideoEnabled,
+      });
+
       this.mediaService.toggleVideo(this.currentState.localStream, enabled);
       this.updateState({ isVideoEnabled: enabled });
-      console.log('📹 VideoChatService: Video toggled, new video enabled state:', enabled);
+      console.log(
+        '📹 VideoChatService: Video toggled, new video enabled state:',
+        enabled
+      );
     }
   }
 
@@ -158,14 +172,14 @@ export class VideoChatService {
     });
 
     // Handle remote stream
-    this.webRTCService.onRemoteStream((stream) => {
+    this.webRTCService.onRemoteStream(stream => {
       console.log('🎥 VideoChatService: Remote stream received', stream);
       console.log('🎥 VideoChatService: Stream tracks', stream.getTracks());
       this.updateState({ remoteStream: stream });
     });
 
     // Handle connection state changes
-    this.webRTCService.onConnectionStateChange((state) => {
+    this.webRTCService.onConnectionStateChange(state => {
       const tempState: Partial<AppState> = {};
       if (state === 'connected') {
         tempState.isConnected = true;
@@ -180,16 +194,16 @@ export class VideoChatService {
     });
 
     // Handle WebRTC errors
-    this.webRTCService.onError((error) => {
+    this.webRTCService.onError(error => {
       this.handleError(error);
     });
   }
 
   private async handleMatchFound(session: ChatSession): Promise<void> {
     try {
-      // this.updateState({ 
+      // this.updateState({
       //   currentSession: session,
-      //   isWaiting: false 
+      //   isWaiting: false
       // });
 
       // Initialize WebRTC connection with peer ID
@@ -246,4 +260,3 @@ export class VideoChatService {
     window.addEventListener('unload', cleanup);
   }
 }
-
