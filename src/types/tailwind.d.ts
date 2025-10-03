@@ -3,7 +3,6 @@ declare module '*.css' {
   export default content;
 }
 
-// Extend the global namespace to include Tailwind CSS classes
 declare global {
   namespace JSX {
     interface IntrinsicAttributes {

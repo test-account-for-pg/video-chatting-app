@@ -1,13 +1,13 @@
 import { 
-  ISignalingService, 
-  IPeerConnectionService, 
   IMediaService, 
-  IMatchingService 
+  IMatchingService, 
+  IWebRTCService
 } from '../types';
-import { FirebaseSignalingService } from './FirebaseSignalingService';
-import { WebRTCPeerConnectionService } from './WebRTCPeerConnectionService';
 import { MediaService } from './MediaService';
 import { MatchingService } from './MatchingService';
+import { WebRTCService } from './WebRTCService';
+import { VideoChatService } from './VideoChatService';
+import { FirebaseService } from './FirebaseService';
 
 export class ServiceContainer {
   private static instance: ServiceContainer;
@@ -25,19 +25,25 @@ export class ServiceContainer {
   }
 
   private initializeServices(): void {
-    // Register services as singletons
-    this.services.set('signaling', new FirebaseSignalingService());
-    this.services.set('peerConnection', new WebRTCPeerConnectionService());
-    this.services.set('media', new MediaService());
-    this.services.set('matching', new MatchingService());
-  }
+    // Create core services
+    const mediaService = new MediaService();
+    const firebaseService = new FirebaseService();
+    const matchingService = new MatchingService(firebaseService);
+    const webRTCService = new WebRTCService(firebaseService);
+    
+    // Create VideoChatService with dependency injection
+    const videoChatService = new VideoChatService(
+      mediaService,
+      matchingService,
+      webRTCService
+    );
 
-  getSignalingService(): ISignalingService {
-    return this.services.get('signaling');
-  }
-
-  getPeerConnectionService(): IPeerConnectionService {
-    return this.services.get('peerConnection');
+    // Register services
+    this.services.set('media', mediaService);
+    this.services.set('firebase', firebaseService);
+    this.services.set('matching', matchingService);
+    this.services.set('webRTC', webRTCService);
+    this.services.set('videoChat', videoChatService);
   }
 
   getMediaService(): IMediaService {
@@ -48,9 +54,17 @@ export class ServiceContainer {
     return this.services.get('matching');
   }
 
-  // Method to replace services (useful for testing or different implementations)
-  registerService<T>(name: string, service: T): void {
-    this.services.set(name, service);
+
+  getWebRTCService(): IWebRTCService {
+    return this.services.get('webRTC');
+  }
+
+  getVideoChatService(): VideoChatService {
+    return this.services.get('videoChat');
+  }
+
+  getFirebaseService(): FirebaseService {
+    return this.services.get('firebase');
   }
 
   // Method to get any service by name
@@ -81,3 +95,4 @@ export class ServiceContainer {
 
 // Export a singleton instance
 export const serviceContainer = ServiceContainer.getInstance();
+
