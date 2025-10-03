@@ -35,18 +35,10 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({
         <div className="flex items-center space-x-2">
           <div
             className={`w-3 h-3 rounded-full ${
-              error
-                ? 'bg-red-400'
-                : isConnected
-                  ? 'bg-green-400'
-                  : isWaiting
-                    ? 'bg-yellow-400'
-                    : 'bg-gray-400'
+              error ? 'bg-red-400' : isConnected ? 'bg-green-400' : isWaiting ? 'bg-yellow-400' : 'bg-gray-400'
             }`}
           ></div>
-          <span className={`text-sm font-medium ${getStatusColor()}`}>
-            {getStatusText()}
-          </span>
+          <span className={`text-sm font-medium ${getStatusColor()}`}>{getStatusText()}</span>
         </div>
 
         {/* Media status indicators */}

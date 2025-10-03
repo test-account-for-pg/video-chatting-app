@@ -29,11 +29,9 @@ export class MatchingService implements IMatchingService {
         await this.createMatch(waitingUserId);
       } else {
         await this.firebaseService.addToWaitingPool();
-        this.firebaseService.onWaitingPoolUpdate(
-          (sessionId, isCaller, peerId) => {
-            this.handleWaitingPoolMatch(sessionId, isCaller, peerId);
-          }
-        );
+        this.firebaseService.onWaitingPoolUpdate((sessionId, isCaller, peerId) => {
+          this.handleWaitingPoolMatch(sessionId, isCaller, peerId);
+        });
         console.log('✅ Added to waiting pool');
       }
     } catch (error) {
@@ -60,11 +58,7 @@ export class MatchingService implements IMatchingService {
     this.matchCallbacks.push(callback);
   }
 
-  async handleWaitingPoolMatch(
-    sessionId: string,
-    isCaller: boolean,
-    peerId: string
-  ): Promise<void> {
+  async handleWaitingPoolMatch(sessionId: string, isCaller: boolean, peerId: string): Promise<void> {
     if (!this.currentUserId) return;
 
     try {
@@ -126,12 +120,7 @@ export class MatchingService implements IMatchingService {
     try {
       const sessionId = this.createSessionId(this.currentUserId, waitingUserId);
 
-      await this.firebaseService.updateWaitingPoolWithSession(
-        waitingUserId,
-        sessionId,
-        false,
-        this.currentUserId
-      );
+      await this.firebaseService.updateWaitingPoolWithSession(waitingUserId, sessionId, false, this.currentUserId);
 
       const session: ChatSession = {
         id: sessionId,

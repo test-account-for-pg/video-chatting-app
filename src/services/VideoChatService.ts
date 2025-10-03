@@ -1,10 +1,4 @@
-import {
-  IMediaService,
-  IMatchingService,
-  IWebRTCService,
-  ChatSession,
-  AppState,
-} from '../types';
+import { IMediaService, IMatchingService, IWebRTCService, ChatSession, AppState } from '../types';
 
 export class VideoChatService {
   private mediaService: IMediaService;
@@ -30,11 +24,7 @@ export class VideoChatService {
   private stateChangeCallbacks: ((state: AppState) => void)[] = [];
   private errorCallbacks: ((error: string) => void)[] = [];
 
-  constructor(
-    mediaService: IMediaService,
-    matchingService: IMatchingService,
-    webRTCService: IWebRTCService
-  ) {
+  constructor(mediaService: IMediaService, matchingService: IMatchingService, webRTCService: IWebRTCService) {
     this.mediaService = mediaService;
     this.matchingService = matchingService;
     this.webRTCService = webRTCService;

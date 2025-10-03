@@ -14,34 +14,16 @@ const validateEnvVar = (name: string, value: string | undefined): string => {
 // Get Firebase configuration from environment variables
 const getFirebaseConfig = (): FirebaseConfig => {
   const config: FirebaseConfig = {
-    apiKey: validateEnvVar(
-      'REACT_APP_FIREBASE_API_KEY',
-      process.env.REACT_APP_FIREBASE_API_KEY
-    ),
-    authDomain: validateEnvVar(
-      'REACT_APP_FIREBASE_AUTH_DOMAIN',
-      process.env.REACT_APP_FIREBASE_AUTH_DOMAIN
-    ),
-    databaseURL: validateEnvVar(
-      'REACT_APP_FIREBASE_DATABASE_URL',
-      process.env.REACT_APP_FIREBASE_DATABASE_URL
-    ),
-    projectId: validateEnvVar(
-      'REACT_APP_FIREBASE_PROJECT_ID',
-      process.env.REACT_APP_FIREBASE_PROJECT_ID
-    ),
-    storageBucket: validateEnvVar(
-      'REACT_APP_FIREBASE_STORAGE_BUCKET',
-      process.env.REACT_APP_FIREBASE_STORAGE_BUCKET
-    ),
+    apiKey: validateEnvVar('REACT_APP_FIREBASE_API_KEY', process.env.REACT_APP_FIREBASE_API_KEY),
+    authDomain: validateEnvVar('REACT_APP_FIREBASE_AUTH_DOMAIN', process.env.REACT_APP_FIREBASE_AUTH_DOMAIN),
+    databaseURL: validateEnvVar('REACT_APP_FIREBASE_DATABASE_URL', process.env.REACT_APP_FIREBASE_DATABASE_URL),
+    projectId: validateEnvVar('REACT_APP_FIREBASE_PROJECT_ID', process.env.REACT_APP_FIREBASE_PROJECT_ID),
+    storageBucket: validateEnvVar('REACT_APP_FIREBASE_STORAGE_BUCKET', process.env.REACT_APP_FIREBASE_STORAGE_BUCKET),
     messagingSenderId: validateEnvVar(
       'REACT_APP_FIREBASE_MESSAGING_SENDER_ID',
       process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID
     ),
-    appId: validateEnvVar(
-      'REACT_APP_FIREBASE_APP_ID',
-      process.env.REACT_APP_FIREBASE_APP_ID
-    ),
+    appId: validateEnvVar('REACT_APP_FIREBASE_APP_ID', process.env.REACT_APP_FIREBASE_APP_ID),
   };
 
   // measurementId is optional

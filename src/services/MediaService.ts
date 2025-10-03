@@ -1,9 +1,7 @@
 import { IMediaService, MediaConstraints } from '../types';
 
 export class MediaService implements IMediaService {
-  async getUserMedia(
-    constraints: MediaConstraints = { video: true, audio: true }
-  ): Promise<MediaStream> {
+  async getUserMedia(constraints: MediaConstraints = { video: true, audio: true }): Promise<MediaStream> {
     try {
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       return stream;

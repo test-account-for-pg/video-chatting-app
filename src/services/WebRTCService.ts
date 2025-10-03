@@ -19,12 +19,7 @@ export class WebRTCService implements IWebRTCService {
     this.setupSignalingHandlers();
   }
 
-  async initConnection(
-    localStream: MediaStream,
-    sessionId: string,
-    isCaller: boolean,
-    peerId: string
-  ): Promise<void> {
+  async initConnection(localStream: MediaStream, sessionId: string, isCaller: boolean, peerId: string): Promise<void> {
     try {
       this.localStream = localStream;
       this.sessionId = sessionId;
@@ -32,10 +27,7 @@ export class WebRTCService implements IWebRTCService {
       this.peerId = peerId;
 
       this.peerConnection = new RTCPeerConnection({
-        iceServers: [
-          { urls: 'stun:stun.l.google.com:19302' },
-          { urls: 'stun:stun1.l.google.com:19302' },
-        ],
+        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }],
       });
 
       localStream.getTracks().forEach(track => {
@@ -70,12 +62,9 @@ export class WebRTCService implements IWebRTCService {
     if (!this.peerConnection) return;
 
     if (this.isCaller) {
-      this.dataChannel = this.peerConnection.createDataChannel(
-        'notifications',
-        {
-          ordered: true,
-        }
-      );
+      this.dataChannel = this.peerConnection.createDataChannel('notifications', {
+        ordered: true,
+      });
       this.setupDataChannelHandlers();
     }
 
@@ -92,9 +81,7 @@ export class WebRTCService implements IWebRTCService {
         const message = JSON.parse(event.data);
 
         if (message.type === 'end_call') {
-          this.connectionStateCallbacks.forEach(callback =>
-            callback('disconnected')
-          );
+          this.connectionStateCallbacks.forEach(callback => callback('disconnected'));
         }
       } catch (error) {
         // Error parsing data channel message
@@ -147,14 +134,8 @@ export class WebRTCService implements IWebRTCService {
         }
       }
 
-      if (
-        state === 'disconnected' ||
-        state === 'failed' ||
-        state === 'closed'
-      ) {
-        this.connectionStateCallbacks.forEach(callback =>
-          callback('disconnected')
-        );
+      if (state === 'disconnected' || state === 'failed' || state === 'closed') {
+        this.connectionStateCallbacks.forEach(callback => callback('disconnected'));
         this.closeConnection();
       }
     };
@@ -203,9 +184,7 @@ export class WebRTCService implements IWebRTCService {
     }
   }
 
-  private async handleIceCandidate(
-    candidate: RTCIceCandidateInit
-  ): Promise<void> {
+  private async handleIceCandidate(candidate: RTCIceCandidateInit): Promise<void> {
     if (!this.peerConnection) return;
 
     try {

@@ -28,11 +28,7 @@ export class ServiceContainer {
     const webRTCService = new WebRTCService(firebaseService);
 
     // Create VideoChatService with dependency injection
-    const videoChatService = new VideoChatService(
-      mediaService,
-      matchingService,
-      webRTCService
-    );
+    const videoChatService = new VideoChatService(mediaService, matchingService, webRTCService);
 
     // Register services
     this.services.set('media', mediaService);

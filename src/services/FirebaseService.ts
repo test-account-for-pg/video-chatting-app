@@ -52,11 +52,7 @@ export class FirebaseService implements IFirebaseService {
     await remove(waitingRef);
   }
 
-  async createSession(
-    sessionId: string,
-    callerId: string,
-    calleeId: string
-  ): Promise<void> {
+  async createSession(sessionId: string, callerId: string, calleeId: string): Promise<void> {
     const sessionRef = ref(database, `sessions/${sessionId}`);
     await set(sessionRef, {
       callerId,
@@ -83,9 +79,7 @@ export class FirebaseService implements IFirebaseService {
     });
   }
 
-  onWaitingPoolUpdate(
-    callback: (sessionId: string, isCaller: boolean, peerId: string) => void
-  ): void {
+  onWaitingPoolUpdate(callback: (sessionId: string, isCaller: boolean, peerId: string) => void): void {
     const waitingRef = ref(database, `waiting_pool/${this.currentUserId}`);
 
     const unsubscribe = onValue(waitingRef, snapshot => {
@@ -100,10 +94,7 @@ export class FirebaseService implements IFirebaseService {
     this.cleanupListeners.set('waiting_pool', unsubscribe);
   }
 
-  async sendOffer(
-    toUserId: string,
-    offer: RTCSessionDescriptionInit
-  ): Promise<void> {
+  async sendOffer(toUserId: string, offer: RTCSessionDescriptionInit): Promise<void> {
     const offerRef = ref(database, `sessions/${toUserId}/offer`);
     await set(offerRef, {
       type: 'offer',
@@ -114,10 +105,7 @@ export class FirebaseService implements IFirebaseService {
     });
   }
 
-  async sendAnswer(
-    toUserId: string,
-    answer: RTCSessionDescriptionInit
-  ): Promise<void> {
+  async sendAnswer(toUserId: string, answer: RTCSessionDescriptionInit): Promise<void> {
     const answerRef = ref(database, `sessions/${toUserId}/answer`);
     await set(answerRef, {
       type: 'answer',
@@ -128,10 +116,7 @@ export class FirebaseService implements IFirebaseService {
     });
   }
 
-  async sendIceCandidate(
-    toUserId: string,
-    candidate: RTCIceCandidateInit
-  ): Promise<void> {
+  async sendIceCandidate(toUserId: string, candidate: RTCIceCandidateInit): Promise<void> {
     const candidateRef = ref(database, `sessions/${toUserId}/ice_candidates`);
     await push(candidateRef, {
       type: 'ice-candidate',
@@ -142,9 +127,7 @@ export class FirebaseService implements IFirebaseService {
     });
   }
 
-  onOffer(
-    callback: (offer: RTCSessionDescriptionInit, fromUserId: string) => void
-  ): void {
+  onOffer(callback: (offer: RTCSessionDescriptionInit, fromUserId: string) => void): void {
     const offerRef = ref(database, `sessions/${this.currentUserId}/offer`);
 
     const unsubscribe = onValue(offerRef, snapshot => {
@@ -159,9 +142,7 @@ export class FirebaseService implements IFirebaseService {
     this.cleanupListeners.set('offer', unsubscribe);
   }
 
-  onAnswer(
-    callback: (answer: RTCSessionDescriptionInit, fromUserId: string) => void
-  ): void {
+  onAnswer(callback: (answer: RTCSessionDescriptionInit, fromUserId: string) => void): void {
     const answerRef = ref(database, `sessions/${this.currentUserId}/answer`);
 
     const unsubscribe = onValue(answerRef, snapshot => {
@@ -176,13 +157,8 @@ export class FirebaseService implements IFirebaseService {
     this.cleanupListeners.set('answer', unsubscribe);
   }
 
-  onIceCandidates(
-    callback: (candidate: RTCIceCandidateInit, fromUserId: string) => void
-  ): void {
-    const candidatesRef = ref(
-      database,
-      `sessions/${this.currentUserId}/ice_candidates`
-    );
+  onIceCandidates(callback: (candidate: RTCIceCandidateInit, fromUserId: string) => void): void {
+    const candidatesRef = ref(database, `sessions/${this.currentUserId}/ice_candidates`);
 
     const unsubscribe = onValue(candidatesRef, snapshot => {
       if (snapshot.exists()) {

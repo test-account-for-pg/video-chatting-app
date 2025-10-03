@@ -77,12 +77,7 @@ export interface IMatchingService {
 }
 
 export interface IWebRTCService {
-  initConnection(
-    localStream: MediaStream,
-    sessionId: string,
-    isCaller: boolean,
-    peerId: string
-  ): Promise<void>;
+  initConnection(localStream: MediaStream, sessionId: string, isCaller: boolean, peerId: string): Promise<void>;
   closeConnection(): void;
   sendEndCallNotification(): void;
   onRemoteStream(callback: (stream: MediaStream) => void): void;
@@ -97,38 +92,15 @@ export interface IFirebaseService {
   addToWaitingPool(): Promise<void>;
   pickWaitingUser(): Promise<string | null>;
   removeFromWaitingPool(userId: string): Promise<void>;
-  createSession(
-    sessionId: string,
-    callerId: string,
-    calleeId: string
-  ): Promise<void>;
-  updateWaitingPoolWithSession(
-    userId: string,
-    sessionId: string,
-    isCaller: boolean,
-    peerId: string
-  ): Promise<void>;
-  onWaitingPoolUpdate(
-    callback: (sessionId: string, isCaller: boolean, peerId: string) => void
-  ): void;
+  createSession(sessionId: string, callerId: string, calleeId: string): Promise<void>;
+  updateWaitingPoolWithSession(userId: string, sessionId: string, isCaller: boolean, peerId: string): Promise<void>;
+  onWaitingPoolUpdate(callback: (sessionId: string, isCaller: boolean, peerId: string) => void): void;
   sendOffer(toUserId: string, offer: RTCSessionDescriptionInit): Promise<void>;
-  sendAnswer(
-    toUserId: string,
-    answer: RTCSessionDescriptionInit
-  ): Promise<void>;
-  sendIceCandidate(
-    toUserId: string,
-    candidate: RTCIceCandidateInit
-  ): Promise<void>;
-  onOffer(
-    callback: (offer: RTCSessionDescriptionInit, fromUserId: string) => void
-  ): void;
-  onAnswer(
-    callback: (answer: RTCSessionDescriptionInit, fromUserId: string) => void
-  ): void;
-  onIceCandidates(
-    callback: (candidate: RTCIceCandidateInit, fromUserId: string) => void
-  ): void;
+  sendAnswer(toUserId: string, answer: RTCSessionDescriptionInit): Promise<void>;
+  sendIceCandidate(toUserId: string, candidate: RTCIceCandidateInit): Promise<void>;
+  onOffer(callback: (offer: RTCSessionDescriptionInit, fromUserId: string) => void): void;
+  onAnswer(callback: (answer: RTCSessionDescriptionInit, fromUserId: string) => void): void;
+  onIceCandidates(callback: (candidate: RTCIceCandidateInit, fromUserId: string) => void): void;
   cleanupSession(sessionId: string): Promise<void>;
   cleanup(): void;
 }
