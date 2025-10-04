@@ -1,0 +1,75 @@
+# ------------------------------
+# Git Basic Commands Cheat Sheet
+# ------------------------------
+
+# 1. Clone a repository
+git clone <repo-url>
+# Downloads a remote repository to your local machine.
+
+# 2. Check current branch
+git branch
+# Lists all branches and highlights the current branch.
+
+# 3. Create a new branch
+git checkout -b <branch-name>
+# Creates a new branch and switches to it.
+
+# 4. Switch to another branch
+git checkout <branch-name>
+# Moves to the specified branch.
+
+# 5. Stage changes
+git add <file-name>
+git add .
+# Stages changes for commit. '.' stages all changes.
+
+# 6. Commit changes
+git commit -m "Commit message"
+# Commits staged changes with a descriptive message.
+
+# 7. Push branch to remote
+git push origin <branch-name>
+# Pushes your local branch to the remote repository.
+
+# 8. Pull latest changes from remote
+git pull origin <branch-name>
+# Fetches and merges changes from the remote branch.
+
+# 9. Merge a branch into current branch
+git merge <branch-name>
+# Merges changes from the specified branch into the current branch.
+
+# 10. Create a tag
+git tag -a <tag-name> -m "Tag message"
+# Marks a specific commit as a release version.
+
+# 11. Push tags to remote
+git push origin <tag-name>
+git push origin --tags
+# Pushes a specific tag or all tags to remote.
+
+# 12. Create a branch from a tag
+git checkout -b <new-branch-name> <tag-name>
+# Creates a new branch starting from the specified tag.
+
+# 13. View commit history
+git log
+git log --oneline
+# Shows commit history. '--oneline' is a concise view.
+
+# 14. View remote URLs
+git remote -v
+# Shows URLs for fetching and pushing to remotes.
+
+# 15. Undo last commit (local)
+git reset --soft HEAD~1
+git reset --hard HEAD~1
+# '--soft' keeps changes staged; '--hard' discards changes.
+
+# 16. View all tags
+git tag
+# Lists all tags in the repository.
+
+# 17. Show details of a tag
+git show <tag-name>
+# Shows commit info for the tag.

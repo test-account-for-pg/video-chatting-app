@@ -3,7 +3,7 @@ import { initializeApp } from 'firebase/app';
 import { getDatabase } from 'firebase/database';
 import { FirebaseConfig } from '../types';
 
-// Validate required environment variables
+// Validate required environment variables //
 const validateEnvVar = (name: string, value: string | undefined): string => {
   if (!value) {
     throw new Error(`Missing required environment variable: ${name}`);
